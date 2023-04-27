@@ -10,7 +10,7 @@ namespace allocator {
 
 // Override alloc, which is used by all allocation functions in this
 // namespace. Default is ::operator new.
-void set_alloc(std::function<void *(size_t)>);
+void set_alloc(std::function<void *(std::size_t)>);
 
 // Override free, which is used by all deallocation functions in this
 // namespace. Default is ::operator delete.
@@ -18,19 +18,19 @@ void set_free(std::function<void(void *)>);
 
 // Override realloc, which is used by the realloc function in this
 // namespace. Default is ::operator delete.
-void set_realloc(std::function<void *(void *, size_t)>);
+void set_realloc(std::function<void *(void *, std::size_t)>);
 
 // Sets the allocators back to the default.
 void reset_overrides();
 
 // Use the function set by set_alloc to allocate memory.
-void *alloc(size_t);
+void *alloc(std::size_t);
 
 // Use the function set by set_free to free memory.
 void free(void *);
 
 // Reallocate existing memory with new size. Must match standard c behavior.
-void *realloc(void *p, size_t s);
+void *realloc(void *p, std::size_t s);
 
 // Equivalent to the new operator, but using the function set by set_alloc.
 template <class T, class... Args>
@@ -52,19 +52,19 @@ void destroy(T *p) noexcept {
 // has its constructor called, with the same arguments. The returned memory must
 // be deleted via destroy_array.
 template <class T, class... Args>
-T *create_array(size_t count, Args &&... args) {
+T *create_array(std::size_t count, Args &&... args) {
     // Allocate additional space to store the array length.
-    size_t padding = sizeof(size_t);
+    std::size_t padding = sizeof(std::size_t);
     auto data = alloc(sizeof(T) * count + padding);
 
     // The padding will be at the front of the data. Set it to the array length.
-    size_t *start = reinterpret_cast<size_t *>(data);
+    std::size_t *start = reinterpret_cast<std::size_t *>(data);
     *start = count;
 
     // The actual array elements start directly after the padding.
     auto p = reinterpret_cast<T *>(start + 1);
     auto element = p;
-    for (size_t i = 0; i < count; ++i) {
+    for (std::size_t i = 0; i < count; ++i) {
         ::new (element) T(std::forward<Args>(args)...);
         ++element;
     }
@@ -81,13 +81,13 @@ void destroy_array(T *p) noexcept {
 
     // The buffer allocated will start before the array length preceding the
     // array elements (p).
-    size_t *start = (reinterpret_cast<size_t *>(p) - 1);
+    std::size_t *start = (reinterpret_cast<std::size_t *>(p) - 1);
     // The array length is first.
-    size_t count = *start;
+    std::size_t count = *start;
 
     // Call destructors.
     T *element = reinterpret_cast<T *>(p);
-    for (size_t i = 0; i < count; ++i) {
+    for (std::size_t i = 0; i < count; ++i) {
         element->~T();
         ++element;
     }

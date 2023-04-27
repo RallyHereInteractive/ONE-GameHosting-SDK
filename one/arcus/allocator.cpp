@@ -10,7 +10,7 @@ namespace allocator {
 namespace {
 
 // Wrapper to allow assignment to the std::function.
-void *default_alloc(size_t bytes) {
+void *default_alloc(std::size_t bytes) {
     return std::malloc(bytes);
 }
 
@@ -19,18 +19,18 @@ void default_free(void *p) {
     std::free(p);
 }
 
-void *default_realloc(void *p, size_t bytes) {
+void *default_realloc(void *p, std::size_t bytes) {
     return std::realloc(p, bytes);
 }
 
 }  // namespace
 
 // Global allocation overridable functions.
-std::function<void *(size_t)> _alloc = default_alloc;
+std::function<void *(std::size_t)> _alloc = default_alloc;
 std::function<void(void *)> _free = default_free;
-std::function<void *(void *, size_t)> _realloc = default_realloc;
+std::function<void *(void *, std::size_t)> _realloc = default_realloc;
 
-void set_alloc(std::function<void *(size_t)> fn) {
+void set_alloc(std::function<void *(std::size_t)> fn) {
     _alloc = fn;
 }
 
@@ -38,7 +38,7 @@ void set_free(std::function<void(void *)> fn) {
     _free = fn;
 }
 
-void set_realloc(std::function<void *(void *, size_t)> fn) {
+void set_realloc(std::function<void *(void *, std::size_t)> fn) {
     _realloc = fn;
 }
 
@@ -48,7 +48,7 @@ void reset_overrides() {
     _realloc = default_realloc;
 }
 
-void *alloc(size_t bytes) {
+void *alloc(std::size_t bytes) {
     assert(_alloc);
     void *p = _alloc(bytes);
     assert(p != nullptr);
@@ -60,7 +60,7 @@ void free(void *p) {
     _free(p);
 }
 
-void *realloc(void *p, size_t s) {
+void *realloc(void *p, std::size_t s) {
     return _realloc(p, s);
 }
 

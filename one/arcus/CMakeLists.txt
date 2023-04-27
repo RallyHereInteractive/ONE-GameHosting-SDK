@@ -65,4 +65,5 @@ if(WIN32)
     target_link_libraries(one_arcus wsock32 ws2_32)
 endif()
 
-install(TARGETS one_arcus DESTINATION lib)
+set_target_properties(one_arcus PROPERTIES PUBLIC_HEADER "${HEADER_FILES}")
+install(TARGETS one_arcus LIBRARY DESTINATION lib PUBLIC_HEADER DESTINATION include/one/arcus)

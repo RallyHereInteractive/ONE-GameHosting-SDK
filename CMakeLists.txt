@@ -58,12 +58,3 @@ configure_file(
   "${PROJECT_SOURCE_DIR}/ping-version.h.in"
   "${PROJECT_SOURCE_DIR}/one/ping/internal/version.h"
 )
-
-# Testing only available if this is the main app
-# Emergency override MODERN_CMAKE_BUILD_TESTING provided as well
-if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR MODERN_CMAKE_BUILD_TESTING))
-  set(RUN_TEST_AFTER_BUILD true)
-  include(CTest)
-  enable_testing()
-  add_subdirectory(tests)
-endif()

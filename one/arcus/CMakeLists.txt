@@ -61,6 +61,8 @@ target_include_directories(one_arcus PUBLIC .)
 
 target_compile_features(one_arcus PUBLIC cxx_std_11)
 
+set_target_properties(one_arcus PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
 if(WIN32)
     target_link_libraries(one_arcus wsock32 ws2_32)
 endif()

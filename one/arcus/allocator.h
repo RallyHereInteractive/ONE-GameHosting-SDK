@@ -45,8 +45,16 @@ T *create(Args &&... args) {
 template <class T>
 void destroy(T *p) noexcept {
     p->~T();
-    free(p);
+    i3d::one::allocator::free(p);
 }
+
+template <class T>
+struct destroyer
+{
+    void operator()(T *p) noexcept {
+        destroy(p);
+    }
+};
 
 // Allocates an array using the function set by set_alloc. Each array element
 // has its constructor called, with the same arguments. The returned memory must
